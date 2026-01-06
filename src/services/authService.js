@@ -1,4 +1,4 @@
-import axios from 'axios';
+import got from "got";
 import CryptoJS from "crypto-js";
 import qs from "qs";
 import { v4 as uuidv4 } from "uuid";
@@ -67,28 +67,32 @@ export default class AuthService {
         return encodeURIComponent(JSON.stringify(dataObj));
     }
 
-    async firstRequest(username, password) {
+    //change to http2 request
+    async firstRequest(username, password) {  
         const data = qs.stringify({
-            'login_account': username,
-            'password': this.encryptPwd(password)
-        });
-
-        const config = {
-            method: 'post',
-            url: 'https://mysdk.37.com/index.php?c=api-login&a=act_login',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: data
-        };
+        login_account: username,
+        password: this.encryptPwd(password)
+         });
 
         try {
-            const response = await axios(config);
-            return response.data;
+            const response = await got.post(
+                'https://mysdk.37.com/index.php?c=api-login&a=act_login',
+                {
+                    http2: true, // 启用 HTTP/2
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'User-Agent': 'okhttp/3.12.12'
+                    },
+                    body: data
+                }
+            );
+
+            return response.body;
         } catch (error) {
             console.error(error);
             throw error;
         }
+
     }
 
     async secondRequest(username, ptoken) {
