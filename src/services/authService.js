@@ -1,3 +1,4 @@
+import axios from "axios";
 import got from "got";
 import CryptoJS from "crypto-js";
 import qs from "qs";
@@ -61,9 +62,9 @@ export default class AuthService {
             clientId: uuidv4(),
             token: token,
             uid: uid,
-            uname: uname
+            uname: uname,
+            c_game_id: "23440"
         };
-
         return encodeURIComponent(JSON.stringify(dataObj));
     }
 
@@ -83,7 +84,8 @@ export default class AuthService {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'User-Agent': 'okhttp/3.12.12'
                     },
-                    body: data
+                    body: data,
+                    responseType: 'json',
                 }
             );
 
@@ -95,6 +97,7 @@ export default class AuthService {
 
     }
 
+    //change to http2 request
     async secondRequest(username, ptoken) {
         const data = qs.stringify({
             'is_self': '1',
@@ -103,18 +106,21 @@ export default class AuthService {
             'puid': username
         });
 
-        const config = {
-            method: 'post',
-            url: 'https://apimyh5.37.com/index.php?c=sdk-login&a=act_login',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: data
-        };
-
         try {
-            const response = await axios(config);
-            return response.data;
+            const response = await got.post(
+                'https://apimyh5.37.com/index.php?c=sdk-login&a=act_login',
+                {
+                    http2: true, // 启用 HTTP/2
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'User-Agent': 'okhttp/3.12.12'
+                    },
+                    body: data,
+                    responseType: 'json',
+                }
+            );
+
+            return response.body;
         } catch (error) {
             console.error(error);
             throw error;
