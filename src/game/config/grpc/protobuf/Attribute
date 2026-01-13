@@ -25,7 +25,7 @@ import "Magic";
         optional int32 spiritBattleTeamNo = 7; 
         repeated int32 equipMagicList = 8; 
         optional int32 equipCloudId = 9; 
-        optional int64 fightValue = 10; 
+        optional string fightValue = 10; 
         repeated AttributeDataMsg playerAttributeDataList = 11; 
         optional int32 equipCloudSkinId = 12; 
         optional int32 curRuleProgrammeIdx = 13; 
